@@ -4,7 +4,7 @@ const res = 100;
 const numAnts = 100;
 const fps = 60;
 
-const decayRate = 0.9;
+const decayRate = 0.8;
 showVertice = false;
 
 let world = new World();

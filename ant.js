@@ -39,6 +39,7 @@ class Ant {
             [0, 1]| yUpperBound
            [-1, 1]| xLowerBound, yUpperBound
         */
+        /*############ bounding check ############*/
         let possible = [[1, -1], [1, 0], [1, 1], [0, 1], [-1, 1]];
         if ((this.x>=xUpperBound || this.y<=yLowerBound) || (this.prevDirection[0]==-1 && this.prevDirection[1]==1))
             possible.splice(possible.indexOf2d([1, -1]), 1);
@@ -50,9 +51,11 @@ class Ant {
             possible.splice(possible.indexOf2d([0, 1]), 1);
         if ((this.x<=xLowerBound || this.y>=yUpperBound) || (this.prevDirection[0]==1 && this.prevDirection[1]==-1))
             possible.splice(possible.indexOf2d([-1, 1]), 1);
+        /*########################################*/
 
-        let randSelector = Math.floor(Math.random() * Math.floor(possible.length));
-        let pheromones = []
+        /*############ choose next step ############*/
+        let randSelector = Math.floor(Math.random() * Math.floor(possible.length)); // uniform probability
+        let pheromones = [] // collect pheromone value on candidate path
         for (let i = 0; i < possible.length; i++) {
             let edge = new Edge(
                 this.x,
@@ -66,14 +69,14 @@ class Ant {
         pheromones.forEach(item => {
             sum += item;
         });
-        if (sum) {
+        if (sum) { // check if at least one path have pheromone
             pheromones.forEach((item, i) => {
-                pheromones[i] /= sum;
+                pheromones[i] /= sum; // normalize between 0-1
             });
             let odds = {};
             for (let i = 0; i < pheromones.length; i++)
                 odds[i] = pheromones[i];
-            randSelector = weightedRandom(odds);
+            randSelector = weightedRandom(odds); // probability based on pheromone value
         }
         let selected = possible[randSelector];
         let edge = new Edge(
@@ -86,6 +89,7 @@ class Ant {
         this.x += selected[0]*step;
         this.y += selected[1]*step;
 
+        // leave pheromone trace
         world.edgesBuf[world.edges.indexOfEdge(edge)].pheromone += 255/numAnts;
 
         // record the path
@@ -96,7 +100,7 @@ class Ant {
     }
     stepBack() {
         let prev = this.path.pop();
-        // update pheromone
+        // leave pheromone trace
         let edge = new Edge(
             this.x,
             this.y,
