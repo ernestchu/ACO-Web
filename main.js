@@ -1,8 +1,8 @@
 const pad = 5;
 const step = 5;
 const res = 100;
-const numAnts = 10;
-const fps = 10;
+const numAnts = 100;
+const fps = 60;
 
 const decayRate = 0.9;
 showVertice = false;

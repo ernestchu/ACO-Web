@@ -4,6 +4,7 @@ class Ant {
         this.y = pad;
         this.path = [[pad, pad]];
         this.forward = true;
+        this.prevDirection = [0, 0]; // prevent the ant from stucking at directions No. 0 and No. 4
         console.log('ant created');
     }
     draw() {
@@ -39,7 +40,7 @@ class Ant {
            [-1, 1]| xLowerBound, yUpperBound
         */
         let possible = [[1, -1], [1, 0], [1, 1], [0, 1], [-1, 1]];
-        if (this.x>=xUpperBound || this.y<=yLowerBound)
+        if ((this.x>=xUpperBound || this.y<=yLowerBound) || (this.prevDirection[0]==-1 && this.prevDirection[1]==1))
             possible.splice(possible.indexOf2d([1, -1]), 1);
         if (this.x>=xUpperBound)
             possible.splice(possible.indexOf2d([1, 0]), 1);
@@ -47,23 +48,47 @@ class Ant {
             possible.splice(possible.indexOf2d([1, 1]), 1);
         if (this.y>=yUpperBound)
             possible.splice(possible.indexOf2d([0, 1]), 1);
-        if (this.x<=xLowerBound || this.y>=yUpperBound)
+        if ((this.x<=xLowerBound || this.y>=yUpperBound) || (this.prevDirection[0]==1 && this.prevDirection[1]==-1))
             possible.splice(possible.indexOf2d([-1, 1]), 1);
 
         let randSelector = Math.floor(Math.random() * Math.floor(possible.length));
+        let pheromones = []
+        for (let i = 0; i < possible.length; i++) {
+            let edge = new Edge(
+                this.x,
+                this.y,
+                this.x+possible[i][0]*step,
+                this.y+possible[i][1]*step
+            )
+            pheromones.push(world.edges[world.edges.indexOfEdge(edge)].pheromone);
+        }
+        let sum = 0;
+        pheromones.forEach(item => {
+            sum += item;
+        });
+        if (sum) {
+            pheromones.forEach((item, i) => {
+                pheromones[i] /= sum;
+            });
+            let odds = {};
+            for (let i = 0; i < pheromones.length; i++)
+                odds[i] = pheromones[i];
+            randSelector = weightedRandom(odds);
+        }
         let selected = possible[randSelector];
+        let edge = new Edge(
+            this.x,
+            this.y,
+            this.x+selected[0]*step,
+            this.y+selected[1]*step
+        )
+        this.prevDirection = selected; // prevent the ant from stucking at directions No. 0 and No. 4
         this.x += selected[0]*step;
         this.y += selected[1]*step;
 
+        world.edgesBuf[world.edges.indexOfEdge(edge)].pheromone += 255/numAnts;
 
-        let edge = new Edge(
-            this.path[this.path.length-1][0],
-            this.path[this.path.length-1][1],
-            this.x,
-            this.y
-        );
-        world.edges[world.edges.indexOfEdge(edge)].pheromone = 255;
-
+        // record the path
         if (this.x>=xUpperBound && this.y>=yUpperBound)
             this.forward = false;
         else
@@ -71,14 +96,16 @@ class Ant {
     }
     stepBack() {
         let prev = this.path.pop();
+        // update pheromone
         let edge = new Edge(
             this.x,
             this.y,
             prev[0],
             prev[1]
         );
-        world.edges[world.edges.indexOfEdge(edge)].pheromone = 255;
-        
+        world.edgesBuf[world.edges.indexOfEdge(edge)].pheromone += 255/numAnts;
+
+        // step back to the previous vertex
         this.x = prev[0];
         this.y = prev[1];
         if (this.x==pad && this.y==pad) {
@@ -102,4 +129,12 @@ Array.prototype.indexOfEdge = function(key) {
             return i;
     }
     return -1;
+}
+function weightedRandom(prob) {
+    let i, sum=0, r=Math.random();
+    for (i in prob) {
+        sum += prob[i];
+        if (r <= sum)
+            return i;
+    }
 }
