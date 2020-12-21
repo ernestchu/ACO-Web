@@ -1,10 +1,10 @@
 const pad = 5;
 const step = 5;
 const res = 100;
-const numAnts = 100;
+const numAnts = 500;
 const fps = 60;
 
-const decayRate = 0.8;
+const decayRate = 0.7;
 showVertice = false;
 const vertexRadius = 20;
 
@@ -23,7 +23,7 @@ function setup() {
 
 function draw() {
     clear(); // I don't know if that is necessary
-    background(240);
+    background(255);
     showVerticeButton.position((0.87*res)*width/res, (0.05*res)*height/res);
     world.draw();
     ants.forEach(ant => {
