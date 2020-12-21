@@ -75,7 +75,7 @@ class Edge {
         strokeWeight(3);
         if (this.pheromone > 255)
             console.log('pheromone > 255 !');
-        stroke(0, 0, 255, this.pheromone/decayRate);
+        stroke(0, 0, 255, this.pheromone/Math.pow(decayRate, 3));
         line(this.x1*wpx, this.y1*hpx, this.x2*wpx, this.y2*hpx);
         stroke('black');
     }

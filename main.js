@@ -46,5 +46,4 @@ function mousePressed() {
         if ((Math.abs(item.x*wpx-mouseX)<vertexRadius) && (Math.abs(item.y*hpx-mouseY)<vertexRadius))
             item.enable = !item.enable;
     });
-
 }
