@@ -6,6 +6,7 @@ const fps = 60;
 
 const decayRate = 0.8;
 showVertice = false;
+const vertexRadius = 20;
 
 let world = new World();
 ants = [];
@@ -17,9 +18,7 @@ function setup() {
     createCanvas(windowWidth, windowHeight);
     frameRate(fps);
     showVerticeButton = createButton('Vertice on/off');
-    showVerticeButton.mouseClicked(() => {
-        showVertice = (showVertice)? false: true;
-    });
+    showVerticeButton.mouseClicked(() => {showVertice = !showVertice;});
 }
 
 function draw() {
@@ -38,4 +37,14 @@ function draw() {
 
 function windowResized() {
     resizeCanvas(windowWidth, windowHeight);
+}
+
+function mousePressed() {
+    const wpx = width/res;
+    const hpx = height/res;
+    world.vertice.forEach((item, i) => {
+        if ((Math.abs(item.x*wpx-mouseX)<vertexRadius) && (Math.abs(item.y*hpx-mouseY)<vertexRadius))
+            item.enable = !item.enable;
+    });
+
 }
