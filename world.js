@@ -27,7 +27,7 @@ class World {
         }
         for (let i = 0+pad; i <= res-pad; i+=step) {
             for (let j = 0+pad; j <= res-pad; j+=step)
-                this.vertice.push(new Vertex(i, j, 20));
+                this.vertice.push(new Vertex(i, j, vertexRadius));
         }
     }
     draw() {
@@ -49,12 +49,16 @@ class Vertex {
         this.x = x;
         this.y = y;
         this.r = r;
+        this.enable = true;
     }
     draw() {
         const wpx = width/res;
         const hpx = height/res;
         strokeWeight(1);
+        if (!this.enable)
+            fill(0);
         circle(this.x*wpx, this.y*hpx, this.r);
+        fill(255);
     }
 }
 class Edge {
@@ -71,7 +75,7 @@ class Edge {
         strokeWeight(3);
         if (this.pheromone > 255)
             console.log('pheromone > 255 !');
-        stroke(0, 255, 0, this.pheromone/decayRate);
+        stroke(0, 0, 255, this.pheromone/decayRate);
         line(this.x1*wpx, this.y1*hpx, this.x2*wpx, this.y2*hpx);
         stroke('black');
     }
