@@ -56,36 +56,39 @@ class Ant {
 
         /*############ choose next step ############*/
         let randSelector = Math.floor(Math.random() * Math.floor(possible.length)); // uniform probability
-        let pheromones = [] // collect pheromone value on candidate path
-        for (let i = 0; i < possible.length; i++) {
-            let vertex = new Vertex (
-                this.x+possible[i][0]*step,
-                this.y+possible[i][1]*step
-            );
-            if (!world.vertice[world.vertice.indexOfVertex(vertex)].enable) { // the candidate vertex is blocked
-                possible.splice(i--, 1); // make the index point to the next element by "don't change the value"
-                continue;
+        let followOrNot = Math.floor(Math.random() * Math.floor(500)); // 1/500 follow the pheromone
+        if (followOrNot) {
+            let pheromones = [] // collect pheromone value on candidate path
+            for (let i = 0; i < possible.length; i++) {
+                let vertex = new Vertex (
+                    this.x+possible[i][0]*step,
+                    this.y+possible[i][1]*step
+                );
+                if (!world.vertice[world.vertice.indexOfVertex(vertex)].enable) { // the candidate vertex is blocked
+                    possible.splice(i--, 1); // make the index point to the next element by "don't change the value"
+                    continue;
+                }
+                let edge = new Edge(
+                    this.x,
+                    this.y,
+                    this.x+possible[i][0]*step,
+                    this.y+possible[i][1]*step
+                );
+                pheromones.push(world.edges[world.edges.indexOfEdge(edge)].pheromone);
             }
-            let edge = new Edge(
-                this.x,
-                this.y,
-                this.x+possible[i][0]*step,
-                this.y+possible[i][1]*step
-            );
-            pheromones.push(world.edges[world.edges.indexOfEdge(edge)].pheromone);
-        }
-        let sum = 0;
-        pheromones.forEach(item => {
-            sum += item;
-        });
-        if (sum) { // check if at least one path have pheromone
-            pheromones.forEach((item, i) => {
-                pheromones[i] /= sum; // normalize between 0-1
+            let sum = 0;
+            pheromones.forEach(item => {
+                sum += item;
             });
-            let odds = {};
-            for (let i = 0; i < pheromones.length; i++)
-                odds[i] = pheromones[i];
-            randSelector = weightedRandom(odds); // probability based on pheromone value
+            if (sum) { // check if at least one path have pheromone
+                pheromones.forEach((item, i) => {
+                    pheromones[i] /= sum; // normalize between 0-1
+                });
+                let odds = {};
+                for (let i = 0; i < pheromones.length; i++)
+                    odds[i] = pheromones[i];
+                randSelector = weightedRandom(odds); // probability based on pheromone value
+            }
         }
         if (randSelector==-1 || randSelector>=possible.length) { // no candidate i.e. dead lock
             this.forward = false;
@@ -105,12 +108,17 @@ class Ant {
         // leave pheromone trace
         world.edgesBuf[world.edges.indexOfEdge(edge)].pheromone += 255/numAnts;
 
-        // record the path
-        if (this.x>=xUpperBound && this.y>=yUpperBound) {
-            this.forward = false;
-            this.gotFood = true;
-            return;
+        for (let i = 0; i < world.foods.length; i++) {
+            if (this.x==world.foods[i].x && this.y==world.foods[i].y) {
+                this.forward = false;
+                this.gotFood = true;
+                world.foods[i].amount -= 0.0001*res;
+                return;
+            }
         }
+
+
+        // record the path
         this.path.push([this.x, this.y]);
     }
     stepBack() {
