@@ -2,7 +2,6 @@ class World {
     constructor() {
         console.log('world created');
         this.edges = [];
-        this.edgesBuf = [];
         this.vertice = [];
         this.verticeContents = [];
 
@@ -12,19 +11,11 @@ class World {
                 this.edges.push(new Edge(i, j, i, (j+step)));
                 this.edges.push(new Edge(i, j, (i+step), (j+step)));
                 this.edges.push(new Edge((i+step), j, i, (j+step)));
-
-                this.edgesBuf.push(new Edge(i, j, (i+step), j));
-                this.edgesBuf.push(new Edge(i, j, i, (j+step)));
-                this.edgesBuf.push(new Edge(i, j, (i+step), (j+step)));
-                this.edgesBuf.push(new Edge((i+step), j, i, (j+step)));
             }
         }
         for (let k = 0+pad; k <= res-pad-step; k+=step) {
             this.edges.push(new Edge(k, (res-pad), (k+step), (res-pad)));
             this.edges.push(new Edge((res-pad), k, (res-pad), (k+step)));
-
-            this.edgesBuf.push(new Edge(k, (res-pad), (k+step), (res-pad)));
-            this.edgesBuf.push(new Edge((res-pad), k, (res-pad), (k+step)));
         }
         for (let i = 0+pad; i <= res-pad; i+=step) {
             for (let j = 0+pad; j <= res-pad; j+=step)
@@ -36,12 +27,12 @@ class World {
         }
     }
     draw() {
-        this.edges.deepCopyFrom(this.edgesBuf);
         this.edges.forEach(edge => {
+            edge.pheromone = edge.pheromoneBuf;
             edge.draw();
             edge.pheromone *= decayRate;
+            edge.pheromoneBuf = edge.pheromone;
         });
-        this.edgesBuf.deepCopyFrom(this.edges);
         if (showVertice) {
             this.vertice.forEach(vertex => {
                 vertex.draw();
@@ -99,6 +90,7 @@ class Edge {
         this.x2 = x2;
         this.y2 = y2;
         this.pheromone = 0;
+        this.pheromoneBuf = 0;
     }
     draw() {
         const wpx = width/res;
@@ -112,9 +104,4 @@ class Edge {
         if (this.pheromone < 1) // clipping for very low pheromone
             this.pheromone = 0;
     }
-}
-Array.prototype.deepCopyFrom = function(edges) {
-     edges.forEach((item, i) => {
-         this[i].pheromone = item.pheromone;
-     });
 }

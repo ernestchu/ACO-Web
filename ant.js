@@ -106,7 +106,7 @@ class Ant {
         this.y += selected[1]*step;
 
         // leave pheromone trace
-        world.edgesBuf[world.edges.indexOfEdge(edge)].pheromone += 255/numAnts;
+        world.edges[world.edges.indexOfEdge(edge)].pheromoneBuf += 255/numAnts;
 
 
         let vertex = new Vertex (
@@ -134,7 +134,7 @@ class Ant {
             prev[1]
         );
         if (this.gotFood)
-            world.edgesBuf[world.edges.indexOfEdge(edge)].pheromone += 255/numAnts;
+            world.edges[world.edges.indexOfEdge(edge)].pheromoneBuf += 255/numAnts;
 
         // step back to the previous vertex
         this.x = prev[0];
