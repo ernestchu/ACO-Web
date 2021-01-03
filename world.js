@@ -4,7 +4,7 @@ class World {
         this.edges = [];
         this.edgesBuf = [];
         this.vertice = [];
-        this.foods = [];
+        this.verticeContents = [];
 
         for (let i = 0+pad; i <= res-pad-step; i+=step) {
             for (let j = 0+pad; j <= res-pad-step; j+=step) {
@@ -30,7 +30,10 @@ class World {
             for (let j = 0+pad; j <= res-pad; j+=step)
                 this.vertice.push(new Vertex(i, j, vertexRadius));
         }
-        this.foods.push(new Food(res-pad, res-pad));
+        for (let i = 0+pad; i <= res-pad; i+=step) {
+            for (let j = 0+pad; j <= res-pad; j+=step)
+                this.verticeContents.push(new VertexContents(i, j));
+        }
     }
     draw() {
         this.edges.deepCopyFrom(this.edgesBuf);
@@ -44,14 +47,9 @@ class World {
                 vertex.draw();
             });
         }
-        for (let i = 0; i < this.foods.length; i++) {
-            if (this.foods[i].amount <= 0) {
-                console.log('food was eaten');
-                this.foods.splice(i, 1);
-                i--;
-            } else
-                this.foods[i].draw();
-        }
+        this.verticeContents.forEach(content => {
+            content.draw();
+        });
     }
 }
 class Vertex {
@@ -65,11 +63,33 @@ class Vertex {
         const wpx = width/res;
         const hpx = height/res;
         strokeWeight(1);
-        if (!this.enable) {
+        if (this.enable)
+            circle(this.x*wpx, this.y*hpx, this.r);
+    }
+}
+class VertexContents {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.content = 'Standard';
+        this.foodAmount = 10;
+    }
+    draw() {
+        const wpx = width/res;
+        const hpx = height/res;
+        strokeWeight(1);
+        if (this.content == 'Obstacle') {
             textSize(4*hpx);
             text('🚧', this.x*wpx-4*hpx/2, this.y*hpx+4*hpx/2);
-        } else
-            circle(this.x*wpx, this.y*hpx, this.r);
+        } else if (this.content == 'Food') {
+            if (this.foodAmount <= 0) {
+                console.log('food was eaten');
+                this.content = 'Standard';
+            } else {
+                textSize(this.foodAmount*hpx);
+                text('🍔', this.x*wpx-4*hpx/2, this.y*hpx+4*hpx/2);
+            }
+        }
     }
 }
 class Edge {
@@ -91,20 +111,6 @@ class Edge {
         stroke('black');
         if (this.pheromone < 1) // clipping for very low pheromone
             this.pheromone = 0;
-    }
-}
-class Food {
-    constructor(x, y) {
-        console.log('food created', x, y);
-        this.x = x;
-        this.y = y;
-        this.amount = 10;
-    }
-    draw() {
-        const wpx = width/res;
-        const hpx = height/res;
-        textSize(this.amount*hpx);
-        text('🍔', this.x*wpx-this.amount/2*hpx, this.y*hpx+this.amount/2*hpx);
     }
 }
 Array.prototype.deepCopyFrom = function(edges) {

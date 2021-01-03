@@ -62,19 +62,15 @@ function windowResized() {
 function mousePressed() {
     const wpx = width/res;
     const hpx = height/res;
-    if (mouseFunction == 'Obstacle') {
-        world.vertice.forEach((item, i) => {
-            if ((Math.abs(item.x*wpx-mouseX)<vertexRadius) && (Math.abs(item.y*hpx-mouseY)<vertexRadius)) {
-                if (item.x < disableZone[0] || item.y > disableZone[1])
-                    item.enable = !item.enable;
+    world.verticeContents.forEach((item, i) => {
+        if ((Math.abs(item.x*wpx-mouseX)<vertexRadius) && (Math.abs(item.y*hpx-mouseY)<vertexRadius)) {
+            if (item.x < disableZone[0] || item.y > disableZone[1]) {
+                if (mouseFunction=='Obstacle') {
+                    item.content = (item.content=='Obstacle')? 'Standard': mouseFunction;
+                    world.vertice[i].enable = !world.vertice[i].enable
+                } else
+                    item.content = mouseFunction;
             }
-        });
-    } else if (mouseFunction == 'Food') {
-        let unit = step;
-        let foodX = Math.floor(mouseX/wpx/unit)*unit;
-        let foodY = Math.floor(mouseY/hpx/unit)*unit;
-        if (foodX < disableZone[0] || foodY > disableZone[1])
-            world.foods.push(new Food(foodX, foodY));
-    }
-
+        }
+    });
 }

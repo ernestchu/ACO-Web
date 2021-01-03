@@ -108,15 +108,18 @@ class Ant {
         // leave pheromone trace
         world.edgesBuf[world.edges.indexOfEdge(edge)].pheromone += 255/numAnts;
 
-        for (let i = 0; i < world.foods.length; i++) {
-            if (this.x==world.foods[i].x && this.y==world.foods[i].y) {
-                this.forward = false;
-                this.gotFood = true;
-                world.foods[i].amount -= 0.0001*res;
-                return;
-            }
-        }
 
+        let vertex = new Vertex (
+            this.x,
+            this.y
+        );
+        let foodIndex = world.verticeContents.indexOfVertex(vertex)
+        if (world.verticeContents[foodIndex].content == 'Food') {
+            this.forward = false;
+            this.gotFood = true;
+            world.verticeContents[foodIndex].foodAmount -= 0.0001*res;
+            return;
+        }
 
         // record the path
         this.path.push([this.x, this.y]);
