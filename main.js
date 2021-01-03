@@ -2,13 +2,15 @@ const pad = 5;
 const step = 5;
 const res = 100;
 const numAnts = 500;
-const fps = 60;
+const fps = 30;
 
 const decayRate = 0.7;
+const bloodDecrement = 0.03;
 showVertice = false;
+showBlood = false;
 mouseFunction = 'Standard';
 const vertexRadius = 20;
-const disableZone = [res-pad-2*step, pad+4*step] // disable obstacles and foods
+const disableZone = [res-pad-2*step, pad+6*step] // disable obstacles and foods
 
 let world = new World();
 ants = [];
@@ -27,6 +29,14 @@ function setup() {
     addFoodsButton.mouseClicked(() => {mouseFunction = 'Food';});
     resetCursorButton = createButton('Reset cursor');
     resetCursorButton.mouseClicked(() => {mouseFunction = 'Standard';});
+    showBloodButton = createButton('Blood on/off');
+    showBloodButton.mouseClicked(() => {showBlood = !showBlood;});
+    cleanPherButton = createButton('Clean pher');
+    cleanPherButton.mouseClicked(() => {
+        world.edges.forEach(edge => {
+            edge.pheromone = edge.pheromoneBuf = 0;
+        });
+    });
 }
 
 function draw() {
@@ -38,6 +48,8 @@ function draw() {
     addObstaclesButton.position((0.87*res)*wpx, (0.1*res)*hpx);
     addFoodsButton.position((0.87*res)*wpx, (0.15*res)*hpx);
     resetCursorButton.position((0.87*res)*wpx, (0.2*res)*hpx);
+    showBloodButton.position((0.87*res)*wpx, (0.25*res)*hpx);
+    cleanPherButton.position((0.87*res)*wpx, (0.30*res)*hpx);
     world.draw();
     ants.forEach(ant => {
         ant.draw();

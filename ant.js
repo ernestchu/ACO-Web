@@ -2,6 +2,7 @@ class Ant {
     constructor() {
         this.x = pad;
         this.y = pad;
+        this.blood = 1.0;
         this.path = [[pad, pad]];
         this.forward = true;
         this.gotFood = false;
@@ -11,10 +12,32 @@ class Ant {
     draw() {
         const wpx = width/res;
         const hpx = height/res;
-        strokeWeight(10);
-        point(this.x*wpx, this.y*hpx);
+        textSize(2*hpx);
+        text('🐜', this.x*wpx-2*hpx/2, this.y*hpx+2*hpx/2);
+        if (showBlood) {
+            rect(this.x*wpx-5*wpx/2, this.y*hpx-2*hpx, 5*wpx, 1*hpx);
+            if (this.blood > 0.6)
+                fill(0, 220, 0);
+            else if (this.blood > 0.3)
+                fill(255, 165, 0);
+            else
+                fill(255, 0, 0);
+            rect(this.x*wpx-5*wpx/2, this.y*hpx-2*hpx, this.blood*5*wpx, 1*hpx);
+            fill(255, 255, 255);
+        }
     }
     step() {
+        // kill & revive
+        if (this.blood <= 0) {
+            this.x = pad;
+            this.y = pad;
+            this.blood = 1.0;
+            this.path = [[pad, pad]];
+            this.forward = true;
+            this.gotFood = false;
+            this.prevDirection = [0, 0]
+        }
+
         let xLowerBound = pad;
         let xUpperBound = res-pad;
         let yLowerBound = pad;
@@ -107,6 +130,7 @@ class Ant {
 
         // leave pheromone trace
         world.edges[world.edges.indexOfEdge(edge)].pheromoneBuf += 255/numAnts;
+        this.blood -= bloodDecrement;
 
 
         let vertex = new Vertex (
@@ -118,6 +142,7 @@ class Ant {
             this.forward = false;
             this.gotFood = true;
             world.verticeContents[foodIndex].foodAmount -= 0.0001*res;
+            this.blood = 1.0;
             return;
         }
 
@@ -143,6 +168,7 @@ class Ant {
             this.path = [[pad, pad]];
             this.forward = true;
             this.gotFood = false;
+            this.blood = 1.0;
         }
     }
 }
