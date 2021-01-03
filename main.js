@@ -8,6 +8,7 @@ const decayRate = 0.7;
 showVertice = false;
 mouseFunction = 'Standard';
 const vertexRadius = 20;
+const disableZone = [res-pad-2*step, pad+4*step] // disable obstacles and foods
 
 let world = new World();
 ants = [];
@@ -63,12 +64,17 @@ function mousePressed() {
     const hpx = height/res;
     if (mouseFunction == 'Obstacle') {
         world.vertice.forEach((item, i) => {
-            if ((Math.abs(item.x*wpx-mouseX)<vertexRadius) && (Math.abs(item.y*hpx-mouseY)<vertexRadius))
-                item.enable = !item.enable;
+            if ((Math.abs(item.x*wpx-mouseX)<vertexRadius) && (Math.abs(item.y*hpx-mouseY)<vertexRadius)) {
+                if (item.x < disableZone[0] || item.y > disableZone[1])
+                    item.enable = !item.enable;
+            }
         });
     } else if (mouseFunction == 'Food') {
         let unit = step;
-        world.foods.push(new Food(Math.floor(mouseX/wpx/unit)*unit, Math.floor(mouseY/hpx/unit)*unit));
+        let foodX = Math.floor(mouseX/wpx/unit)*unit;
+        let foodY = Math.floor(mouseY/hpx/unit)*unit;
+        if (foodX < disableZone[0] || foodY > disableZone[1])
+            world.foods.push(new Food(foodX, foodY));
     }
 
 }
