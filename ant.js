@@ -87,7 +87,7 @@ class Ant {
                     this.x+possible[i][0]*step,
                     this.y+possible[i][1]*step
                 );
-                if (!world.vertice[world.vertice.indexOfVertex(vertex)].enable) { // the candidate vertex is blocked
+                if (!world.vertices[world.vertices.indexOfVertex(vertex)].enable) { // the candidate vertex is blocked
                     possible.splice(i--, 1); // make the index point to the next element by "don't change the value"
                     continue;
                 }
@@ -137,11 +137,11 @@ class Ant {
             this.x,
             this.y
         );
-        let foodIndex = world.verticeContents.indexOfVertex(vertex)
-        if (world.verticeContents[foodIndex].content == 'Food') {
+        let foodIndex = world.verticesContents.indexOfVertex(vertex)
+        if (world.verticesContents[foodIndex].content == 'Food') {
             this.forward = false;
             this.gotFood = true;
-            world.verticeContents[foodIndex].foodAmount -= 0.0001*res;
+            world.verticesContents[foodIndex].foodAmount -= 0.0001*res;
             this.blood = 1.0;
             return;
         }

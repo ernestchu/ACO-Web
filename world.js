@@ -2,8 +2,8 @@ class World {
     constructor() {
         console.log('world created');
         this.edges = [];
-        this.vertice = [];
-        this.verticeContents = [];
+        this.vertices = [];
+        this.verticesContents = [];
 
         for (let i = 0+pad; i <= res-pad-step; i+=step) {
             for (let j = 0+pad; j <= res-pad-step; j+=step) {
@@ -19,11 +19,11 @@ class World {
         }
         for (let i = 0+pad; i <= res-pad; i+=step) {
             for (let j = 0+pad; j <= res-pad; j+=step)
-                this.vertice.push(new Vertex(i, j, vertexRadius));
+                this.vertices.push(new Vertex(i, j, vertexRadius));
         }
         for (let i = 0+pad; i <= res-pad; i+=step) {
             for (let j = 0+pad; j <= res-pad; j+=step)
-                this.verticeContents.push(new VertexContents(i, j));
+                this.verticesContents.push(new VertexContents(i, j));
         }
     }
     draw() {
@@ -33,12 +33,12 @@ class World {
             edge.pheromone *= decayRate;
             edge.pheromoneBuf = edge.pheromone;
         });
-        if (showVertice) {
-            this.vertice.forEach(vertex => {
+        if (showVertices) {
+            this.vertices.forEach(vertex => {
                 vertex.draw();
             });
         }
-        this.verticeContents.forEach(content => {
+        this.verticesContents.forEach(content => {
             content.draw();
         });
     }

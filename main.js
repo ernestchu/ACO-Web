@@ -6,7 +6,7 @@ const fps = 30;
 
 const decayRate = 0.7;
 const bloodDecrement = 0.03;
-showVertice = false;
+showVertices = false;
 showBlood = false;
 mouseFunction = 'Standard';
 const vertexRadius = 20;
@@ -21,8 +21,8 @@ for (var i = 0; i < numAnts; i++) {
 function setup() {
     createCanvas(windowWidth, windowHeight);
     frameRate(fps);
-    showVerticeButton = createButton('Vertice on/off');
-    showVerticeButton.mouseClicked(() => {showVertice = !showVertice;});
+    showVerticesButton = createButton('Vertices on/off');
+    showVerticesButton.mouseClicked(() => {showVertices = !showVertices;});
     addObstaclesButton = createButton('Add obstacles');
     addObstaclesButton.mouseClicked(() => {mouseFunction = 'Obstacle';});
     addFoodsButton = createButton('Add foods');
@@ -44,7 +44,7 @@ function draw() {
     const hpx = height/res;
     clear(); // I don't know if that is necessary
     background(255);
-    showVerticeButton.position((0.87*res)*wpx, (0.05*res)*hpx);
+    showVerticesButton.position((0.87*res)*wpx, (0.05*res)*hpx);
     addObstaclesButton.position((0.87*res)*wpx, (0.1*res)*hpx);
     addFoodsButton.position((0.87*res)*wpx, (0.15*res)*hpx);
     resetCursorButton.position((0.87*res)*wpx, (0.2*res)*hpx);
@@ -74,12 +74,12 @@ function windowResized() {
 function mousePressed() {
     const wpx = width/res;
     const hpx = height/res;
-    world.verticeContents.forEach((item, i) => {
+    world.verticesContents.forEach((item, i) => {
         if ((Math.abs(item.x*wpx-mouseX)<vertexRadius) && (Math.abs(item.y*hpx-mouseY)<vertexRadius)) {
             if (item.x < disableZone[0] || item.y > disableZone[1]) {
                 if (mouseFunction=='Obstacle') {
                     item.content = (item.content=='Obstacle')? 'Standard': mouseFunction;
-                    world.vertice[i].enable = !world.vertice[i].enable
+                    world.vertices[i].enable = !world.vertices[i].enable
                 } else
                     item.content = mouseFunction;
             }
